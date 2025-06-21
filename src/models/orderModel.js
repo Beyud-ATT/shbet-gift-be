@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Settings = require("./settingModel");
+const Customer = require("./customerModel");
 
 const orderSchema = new mongoose.Schema(
   {
@@ -31,6 +31,13 @@ const orderSchema = new mongoose.Schema(
 orderSchema.pre(/^find/, function (next) {
   this.populate("customer").populate("product");
   next();
+});
+
+orderSchema.post("save", async function () {
+  const customer = await Customer.findById(this.customer);
+  customer.orders.push(this._id);
+  customer.lastParticipateDate = new Date();
+  await customer.save();
 });
 
 const Order = mongoose.model("Order", orderSchema);

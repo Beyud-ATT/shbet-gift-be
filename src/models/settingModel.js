@@ -9,6 +9,10 @@ const settingSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
+  status: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const Setting = mongoose.model("Setting", settingSchema);
