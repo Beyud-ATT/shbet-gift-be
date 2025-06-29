@@ -4,11 +4,7 @@ const catchAsync = require("../../utils/catchAsync");
 const User = require("../models/userModel");
 const AppError = require("../../utils/appError");
 const Customer = require("../models/customerModel");
-
-const signToken = (data) =>
-  jwt.sign(data, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
+const { signToken } = require("../../utils/helper");
 
 const createSendToken = (user, statusCode, res) => {
   const token = signToken({ id: user._id, vipLevel: user.vipLevel });

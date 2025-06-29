@@ -13,6 +13,8 @@ const orderSchema = new mongoose.Schema(
       ref: "Product",
       require: true,
     },
+    name: String,
+    phone: String,
     address: String,
     note: String,
     status: {

@@ -17,13 +17,14 @@ const handlevalidationErroDB = (err) => {
   return new AppError(message, 400);
 };
 
-const handleJWTError = (err) => {
-  const message = err;
+const handleJWTError = () => {
+  // const message = err;
+  const message = "Hãy kiểm tra điều kiện nhận quà hoặc liên hệ CSKH !!!";
   return new AppError(message, 401);
 };
 
 const handleJWTExpiredError = () =>
-  new AppError("Token expired! Please login again", 401);
+  new AppError("Phiên hết hạn, kiểm tra lại điều kiện nhận quà !!!", 401);
 
 const sendDevError = (err, req, res) => {
   console.log(err.stack);
@@ -64,7 +65,7 @@ module.exports = (err, req, res, next) => {
     if (error.code === 11000) error = handleCastErrorFieldDB(error);
     if (error._message === "Validation failed")
       error = handlevalidationErroDB(error);
-    if (error.name === "JsonWebTokenError") error = handleJWTError(error);
+    if (error.name === "JsonWebTokenError") error = handleJWTError();
     if (error.name === "TokenExpiredError") error = handleJWTExpiredError();
 
     sendErrorProd(error, req, res);

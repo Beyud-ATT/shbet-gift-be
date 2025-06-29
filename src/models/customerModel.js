@@ -22,6 +22,12 @@ customerSchema.statics.checkCustomerInfo = async function ({
   const customer = await this.findOne({ account });
 
   const dataFromPlatform = await getCustomerInfo({ account });
+  if (!dataFromPlatform.Data) {
+    throw new AppError(
+      "Không tìm thấy thông tin tài khoản trên nền tảng !!!",
+      404,
+    );
+  }
   const { Status, VipLevel, BankAccounts } = dataFromPlatform.Data;
 
   if (Status !== "Kích hoạt") {

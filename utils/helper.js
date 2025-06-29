@@ -1,3 +1,5 @@
+const jwt = require("jsonwebtoken");
+
 function parseQuery(queryString) {
   const queryObj = { ...queryString };
   const exludeFields = ["pageIndex", "pageSize", "sort", "limit", "fields"];
@@ -39,4 +41,10 @@ function isPromotionActive() {
   return day === month;
 }
 
-module.exports = { parseQuery, hashData, isPromotionActive };
+function signToken(data) {
+  return jwt.sign(data, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  });
+}
+
+module.exports = { parseQuery, hashData, isPromotionActive, signToken };
