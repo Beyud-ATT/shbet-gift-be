@@ -10,17 +10,25 @@ module.exports = async function checkProductValid(req, res, next) {
   const { slug } = req.params;
 
   if (!slug) {
-    return next(new AppError("Tìm kiếm sản phẩm thất bại !!!", 404));
+    return next(new AppError("Thiếu thông tin sản phẩm !!!", 404));
   }
 
-  if (!isPromotionActive()) {
-    return next(new AppError("Khuyến mãi chưa bắt đầu !!!", 400));
-  }
+  // if (!isPromotionActive()) {
+  //   return next(new AppError("Khuyến mãi chưa bắt đầu !!!", 400));
+  // }
 
   const settings = await Settings.findOne({});
   const { vipLevel: requiredVipLevel } = settings;
   if (!settings.status) {
-    return next(new AppError("Khuyến mãi chưa bắt đầu !!!", 400));
+    return next(new AppError("Khuyến mãi hiện không hoạt động !!!", 400));
+  }
+  if (settings.blacklist.split(",").includes(customer.account)) {
+    return next(
+      new AppError(
+        "Tài khoản của bạn đã bị hạn chế trong chương trình này !!!",
+        400,
+      ),
+    );
   }
 
   const customerRecord = await Customer.findById(customer.id);
@@ -67,12 +75,9 @@ module.exports = async function checkProductValid(req, res, next) {
     console.log(`Customer total deposit amount: ${TotalDepositAmount}`);
     console.log(`Required total deposit amount: ${requiredDeposit}`);
     return next(
-      new AppError("Tài khoản của bạn không đủ điều kiện để tham gia !!!", 400),
+      new AppError("Tài khoản của bạn không đủ điều kiện để nhận quà !!!", 400),
     );
   }
-
-  productRecord.quantity -= 1;
-  await productRecord.save();
 
   req.product = productRecord;
 

@@ -2,29 +2,28 @@ const jwt = require("jsonwebtoken");
 
 function parseQuery(queryString) {
   const queryObj = { ...queryString };
-  const exludeFields = ["pageIndex", "pageSize", "sort", "limit", "fields"];
-  exludeFields.forEach((field) => delete queryObj[field]);
+  const excludeFields = ["pageSize", "pageIndex", "sort", "fields"];
+  excludeFields.forEach((field) => delete queryObj[field]);
 
-  let queryStr = JSON.stringify(queryObj);
-  queryStr = queryStr.replace(
-    /\b(gte|gt|lte|lt|regex)\b/g,
-    (match) => `$${match}`,
-  );
-
-  const parsedQuery = JSON.parse(queryStr);
-  const query = Object.keys(parsedQuery).reduce((prev, curr) => {
-    if (parsedQuery[curr].$regex !== undefined) {
-      return {
-        ...prev,
-        [curr]: {
-          $regex: new RegExp(parsedQuery[curr].$regex, "i"),
-        },
-      };
+  const query = Object.keys(queryObj).reduce((prev, curr) => {
+    const operatorMatch = curr.match(/^(.+)\[(gte|gt|lte|lt|regex)\]$/);
+    if (operatorMatch) {
+      const [, field, operator] = operatorMatch || [];
+      if (operator === "regex") {
+        return {
+          ...prev,
+          [field]: { $regex: new RegExp(queryObj[curr], "i") },
+        };
+      }
+      if (operator !== "regex") {
+        return {
+          ...prev,
+          [field]: { [`$${operator}`]: queryObj[curr] },
+        };
+      }
+      return { ...prev, [field]: queryObj[curr] };
     }
-    return {
-      ...prev,
-      [curr]: parsedQuery[curr],
-    };
+    return { ...prev, [curr]: queryObj[curr] };
   }, {});
 
   return query;

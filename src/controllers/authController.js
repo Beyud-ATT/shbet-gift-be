@@ -53,7 +53,7 @@ exports.login = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ username }).select("+password");
 
   if (!user || !(await user.correctPassword(password, user.password))) {
-    return next(new AppError("Các thông tin tài khoản không đúng !!!", 401));
+    return next(new AppError("Các thông tin tài khoản không đúng !!!", 400));
   }
 
   createSendToken(user, 200, res);
@@ -89,7 +89,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   const currentUser = await User.findById(decoded.id);
   if (!currentUser) {
-    return next(new AppError("Không tìm thấy thông tin người dùng !!!", 404));
+    return next(new AppError("Không tìm thấy thông tin người dùng !!!", 401));
   }
 
   req.user = decoded;

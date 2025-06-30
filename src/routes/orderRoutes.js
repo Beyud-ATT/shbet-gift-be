@@ -7,6 +7,9 @@ const {
   updateOrder,
   deleteOrder,
   customerCreateOrder,
+  acceptOrder,
+  rejectOrder,
+  sendConfirmMail,
 } = require("../controllers/orderController");
 const authController = require("../controllers/authController");
 const customerValidation = require("../middlewares/customerValidation");
@@ -32,5 +35,8 @@ router
 router.use(authController.protect);
 router.route("/").get(getOrders).post(createOrder);
 router.route("/:id").get(getOrder).patch(updateOrder).delete(deleteOrder);
+router.route("/:id/accept").patch(acceptOrder);
+router.route("/:id/reject").patch(rejectOrder);
+router.route("/:id/send-confirm-mail").patch(sendConfirmMail);
 
 module.exports = router;

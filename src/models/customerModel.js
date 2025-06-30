@@ -9,11 +9,16 @@ const customerSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    lastParticipateDate: { type: Date, default: Date.now },
-    orders: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }],
+    lastParticipateDate: { type: Date },
   },
-  { timestamps: true },
+  { timestamps: true, toJSON: { virtuals: true } },
 );
+
+customerSchema.virtual("orders", {
+  ref: "Order",
+  localField: "_id",
+  foreignField: "customer",
+});
 
 customerSchema.statics.checkCustomerInfo = async function ({
   account,
@@ -42,7 +47,6 @@ customerSchema.statics.checkCustomerInfo = async function ({
   if (!customer) {
     const data = {
       account,
-      lastParticipateDate: Date.now(),
       orders: [],
     };
 

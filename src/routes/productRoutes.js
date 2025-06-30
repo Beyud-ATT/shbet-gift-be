@@ -17,15 +17,16 @@ const router = express.Router();
 
 // *Client routes
 const rateLimitClient = rateLimit({
-  max: 10,
+  max: 100,
   windowMs: 60 * 60 * 1000,
   message: "Too many requests from this IP, please try again in an hour!",
 });
 // *API to get product raw data
-router.get("/client/:slug", getProductsForClient);
+router.get("/client/:slug", rateLimitClient, getProductsForClient);
 // *API to check customer and product
 router.post(
   "/client/valid-check/:slug",
+  rateLimitClient,
   customerLogin,
   customerValidation,
   getProductsForClientValidCheck,

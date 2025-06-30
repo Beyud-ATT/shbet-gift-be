@@ -70,10 +70,14 @@ exports.getOne = (Model) =>
     });
   });
 
-exports.getAll = (Model) =>
+exports.getAll = (Model, populate) =>
   catchAsync(async (req, res, next) => {
     const features = new APIFeature(Model, req.query);
     features.filter().sort().limit().paginate();
+
+    if (populate) {
+      features.query.populate(populate);
+    }
 
     const doc = await features.query;
 
@@ -81,7 +85,7 @@ exports.getAll = (Model) =>
 
     res.status(200).json({
       status: "success",
-      pagiantion: {
+      pagination: {
         total,
         pageIndex: req.query.pageIndex || 1,
         pageSize: req.query.pageSize || 10,

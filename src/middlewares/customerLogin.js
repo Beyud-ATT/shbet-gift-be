@@ -12,7 +12,7 @@ exports.customerLogin = catchAsync(async (req, res, next) => {
   const customer = await Customer.checkCustomerInfo({ account, bankInfo });
 
   if (!customer) {
-    return next(new AppError("Không tìm thấy thông tin khách hàng !!!", 404));
+    return next(new AppError("Không tìm thấy thông tin khách hàng !!!", 401));
   }
 
   req.customer = {

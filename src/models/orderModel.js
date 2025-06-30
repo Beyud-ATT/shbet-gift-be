@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Customer = require("./customerModel");
+const Product = require("./productModel");
 
 const orderSchema = new mongoose.Schema(
   {
@@ -19,7 +20,7 @@ const orderSchema = new mongoose.Schema(
     note: String,
     status: {
       type: String,
-      enum: ["pending", "accepted", "rejected"],
+      enum: ["pending", "accepted", "rejected", "mailed"],
       default: "pending",
     },
     rejectedReason: {
@@ -37,9 +38,12 @@ orderSchema.pre(/^find/, function (next) {
 
 orderSchema.post("save", async function () {
   const customer = await Customer.findById(this.customer);
-  customer.orders.push(this._id);
   customer.lastParticipateDate = new Date();
   await customer.save();
+
+  const productRecord = await Product.findById(this.product);
+  productRecord.quantity -= 1;
+  await productRecord.save();
 });
 
 const Order = mongoose.model("Order", orderSchema);
