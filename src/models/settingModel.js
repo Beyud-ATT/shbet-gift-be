@@ -13,6 +13,14 @@ const settingSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  homePageLink: {
+    type: String,
+    default: "",
+  },
+  promotionLink: {
+    type: String,
+    default: "",
+  },
 });
 
 const Setting = mongoose.model("Setting", settingSchema);
